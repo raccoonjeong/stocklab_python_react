@@ -1,6 +1,6 @@
 {
   "python.pythonPath": "C:\\Users\\user\\envs\\stocklab\\Scripts\\python.exe",
-  // "python.linting.pylintArgs": ["--generate-members"],
+  "python.linting.pylintArgs": ["--generate-members"],
   "python.linting.enabled": true,
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": ["--line-length", "100"],
