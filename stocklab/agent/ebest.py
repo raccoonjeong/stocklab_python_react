@@ -55,7 +55,7 @@ class EBest:
         self.xa_session_client = win32com.client.DispatchWithEvents(
             "XA_Session.XASession", XASession
         )
-
+        print("CHECK self.account...", self.account)
         self.query_cnt = []
 
     def _execute_query(self, res, in_block_name, out_block_name, *out_fields, **set_fields):
@@ -87,7 +87,7 @@ class EBest:
         print("res", res)
         # xa_query.LoadFromResFile(res + ".res")
         xa_query.LoadFromResFile(XAQuery.RES_PATH + "\\" + res + ".res")
-
+        print("TEST........",)
         # in_block_name 세팅
         for key, value in set_fields.items():
             xa_query.SetFieldData(in_block_name, key, 0, value)
@@ -255,6 +255,74 @@ class EBest:
         XASession.login_state = 0
         self.xa_session_client.DisconnectServer()
 
+    def get_account_info(self):
+        """
+        TR: CSPAQ12200 현물계좌 예수금/주문가능금액/총평가
+        :return result:list Field CSPAQ12200 참고
+        """
+        in_params = {"RecCnt":1, "AcntNo":self.account, "Pwd":self.passwd}
+        out_params = ["MnyOrdAbleAmt", "BalEvalAmt", "DpsastTotamt", "InvstOrgAmt", "InvstPlAmt", "Dps"]
+        result = self._execute_query("CSPAQ12200",
+                                    "CSPAQ12200InBlock1",
+                                    "CSPAQ12200OutBlock2",
+                                    *out_params,
+                                    **in_params)
+        return result
+
+    def get_account_stock_info(self):
+        """
+        TR: CSPAQ12300 현물계좌 잔고내역 조회
+        :return result:list 계좌 보유 종목 정보
+        """
+        in_params = {"RecCnt":1, "AcntNo":self.account, "Pwd":self.passwd, "BalCreTp":"0",
+        "CmsnAppTpCode":"0", "D2balBaseQryTp": "0", "UprcTpCode": "0"}
+        out_params = ["IsuNo", "IsuNm", "BalQty", "SellPrc", "BuyPrc", "NowPrc", "AvrUprc", "BalEvalAmt", "PrdayCprc"]
+        result = self._execute_query("CSPAQ12300", 
+                                    "CSPAQ12300InBlock1",
+                                    "CSPAQ12300OutBlock3",
+                                    *out_params,
+                                    **in_params)
+        return result
+
+    def order_stock(self, code, qty, price, bns_type, order_type):
+        """
+        TR: CSPAT00600 현물 정상 주문
+        :param bns_type:str 매매타입, 1:매도, 2:매수
+        :param order_type:str 호가유형,
+            00:지정가, 03:시장가, 05:조건부지정가, 07:최우선지정가
+            61:장개시전시간외 종가, 81:시간외종가, 82:시간외단일가
+        :return result:dict 주문 관련 정보
+        """
+        in_params = {"AcntNo":self.account, "InptPwd":self.passwd, "IsuNo":code, "OrdQty":qty,
+                    "OrdPrc":price, "BnsTpCode":bns_type, "OrdprcPtnCode":order_type, "MgntrnCode":"000",
+                    "LoanDt":"", "OrdCndiTpCode":"0"}
+        out_params = ["OrdNo", "OrdTime", "OrdMktCode", "OrdPtnCode", "ShtnIsuNo", "MgempNo", "OrdAmt", "SpotOrdQty", "IsuNm"]
+
+        print("in_params",in_params)
+        result = self._execute_query("CSPAT00600",
+                                    "CSPAT00600InBlock1",
+                                    "CSPAT00600OutBlock2",
+                                    *out_params,
+                                    **in_params)
+        return result
+    
+    def order_cancel(self, order_no, code, qty):
+        """
+        TR: CSPAT00800 현물 취소주문
+        :param order_no:str 주문번호
+        :param code:str 종목코드
+        :param qty:str 취소 수량
+        :return result:dict 취소 결과
+        """
+        in_params = {"OrgOrdNo":order_no, "AcntNo":self.account, "InptPwd":self.passwd, "IsuNo":code, "OrdQty":qty}
+        out_params = ["OrdNo", "PrntOrdNo", "OrdTime", "OrdPtnCode", "IsuNm"]
+
+        result = self._execute_query("CSPAT00800",
+                                    "CSPAT00800InBlock1",
+                                    "CSPAT00800OutBlock2",
+                                    *out_params,
+                                    **in_params)
+        return result
 
 class XAQuery:
     RES_PATH = "C:\\eBEST\\xingAPI\\Res"
