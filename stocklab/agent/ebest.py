@@ -324,6 +324,79 @@ class EBest:
                                     **in_params)
         return result
 
+    def order_check(self, order_no=None):
+        """
+        TR: t0425 주식 체결/미체결
+        :param code:str 종목코드
+        :param order_no:str 주문번호
+        :return result:dict 주문번호의 체결상태
+        """
+        in_params = {"accno": self.account, "passwd": self.passwd, "expcode": "", 
+                    "chegb":"0", "medosu":"0", "sortgb":"1", "cts_ordno":" "}
+        out_params = ["ordno", "expcode", "medosu", "qty", "price", "cheqty", "cheprice", "ordrem", "cfmqty", "status", "orgordno", "ordgb", "ordermtd", "sysprocseq", "hogagb", "price1", "orggb", "singb", "loandt"]
+        result_list = self._execute_query("t0425",
+                                    "t0425InBlock",
+                                    "t0425OutBlock1",
+                                    *out_params,
+                                    **in_params)
+        
+        result = {}
+        if order_no is not None:
+            for item in result_list:
+                if item["주문번호"] == order_no:
+                    result = item
+            return result
+        else:
+            return result_list
+
+    def get_current_call_price_by_code(self, code=None):
+        """
+        TR:t1101 주식 현재가 호가 조회
+        :param code:str 종목코드
+        """
+        tr_code = "t1101"
+        in_params = {"shcode":code}
+        out_params =["hname", "price", "sign", "change", "diff", "volume", 
+            "jnilclose", "offerho1","bidho1", "offerrem1", "bidrem1",
+            "offerho2","bidho2", "offerrem2", "bidrem2",
+            "offerho3","bidho3", "offerrem3", "bidrem3",
+            "offerho4","bidho4", "offerrem4", "bidrem4",
+            "offerho5","bidho5", "offerrem5", "bidrem5",
+            "offerho6","bidho6", "offerrem6", "bidrem6",
+            "offerho7","bidho7", "offerrem7", "bidrem7",
+            "offerho8","bidho8", "offerrem8", "bidrem8",
+            "offerho9","bidho9", "offerrem9", "bidrem9",
+            "offerho10","bidho10", "offerrem10", "bidrem10",
+            "preoffercha10", "prebidcha10", "offer", "bid",
+            "preoffercha", "prebidcha", "hotime", "yeprice", "yevolume",
+            "yesign", "yechange", "yediff", "tmoffer", "tmbid", "ho_status",
+            "shcode", "uplmtprice", "dnlmtprice", "open", "high", "low"]
+
+        result = self._execute_query("t1101",
+                        "t1101InBlock",
+                        "t1101OutBlock",
+                        *out_params,
+                        **in_params)
+
+        for item in result:
+            item["code"] = code
+
+        return result
+
+    def get_ticket_size(self, price):
+        """
+        호가 단위 조회 메서드
+        :param price:int 가격
+        :return 호가 단위
+        """
+        if price < 1000: return 1
+        elif price >= 1000 and price < 5000: return 5
+        elif price >= 5000 and price < 10000: return 10
+        elif price >= 10000 and price < 50000: return 50
+        elif price >= 50000 and price < 100000: return 100
+        elif price >= 100000 and price < 500000: return 500
+        elif price >= 500000: return 1000
+
 class XAQuery:
     RES_PATH = "C:\\eBEST\\xingAPI\\Res"
     tr_run_state = 0

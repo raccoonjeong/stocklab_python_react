@@ -56,30 +56,44 @@ class TestEBest(unittest.TestCase):
     #     assert result is not None
     #     print(result)
     
-    def test_get_account_info(self):
-        print("=========현물계좌 예수금/주문가능금액/총평가(CSPAQ12200) 조회=========")
-        print(inspect.stack()[0][3])
-        result = self.ebest.get_account_info()
-        assert result is not None
-        print(result)
+    # def test_get_account_info(self):
+    #     print("=========현물계좌 예수금/주문가능금액/총평가(CSPAQ12200) 조회=========")
+    #     print(inspect.stack()[0][3])
+    #     result = self.ebest.get_account_info()
+    #     assert result is not None
+    #     print(result)
 
-    def test_get_account_stock_info(self):
-        print("=========현물계좌 잔고내역(CSPAQ12300) 조회=========")
-        print(inspect.stack()[0][3])
-        result = self.ebest.get_account_stock_info()
-        assert result is not None
-        print(result)
+    # def test_get_account_stock_info(self):
+    #     print("=========현물계좌 잔고내역(CSPAQ12300) 조회=========")
+    #     print(inspect.stack()[0][3])
+    #     result = self.ebest.get_account_stock_info()
+    #     assert result is not None
+    #     print(result)
 
-    def test_order_stock(self):
-        print("=========현물 정상 주문(CSPAT00600) 실행=========")
+    # def test_order_stock(self):
+    #     print("=========현물 정상 주문(CSPAT00600) 실행=========")
+    #     print(inspect.stack()[0][3])
+    #     result = self.ebest.order_stock("005930", "2", "50000", "2", "00")
+    #     assert result
+    #     print(result)
+
+    # def test_order_cancel(self):
+    #     print("=========현물 취소주문(CSPAT00800) 실행=========")
+    #     print(inspect.stack()[0][3])
+    #     result = self.ebest.order_cancel("29515", "A005930", "2")
+    #     assert result
+    #     print(result)
+
+    def test_order_check(self):
+        print("========= 주식 체결/미체결(t0425) =========")
         print(inspect.stack()[0][3])
-        result = self.ebest.order_stock("005930", "2", "50000", "2", "00")
+        result = self.ebest.order_check("29515")
         assert result
         print(result)
 
-    def test_order_cancel(self):
-        print("=========현물 취소주문(CSPAT00800) 실행=========")
+    def test_get_current_call_price_by_code(self):
+        print("========= 주식 현재가 호가 조회(t1101) =========")
         print(inspect.stack()[0][3])
-        result = self.ebest.order_cancel("29515", "A005930", "2")
+        result = self.ebest.get_current_call_price_by_code("005930")
         assert result
         print(result)
