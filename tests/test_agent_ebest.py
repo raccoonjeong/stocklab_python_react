@@ -84,16 +84,30 @@ class TestEBest(unittest.TestCase):
     #     assert result
     #     print(result)
 
-    def test_order_check(self):
-        print("========= 주식 체결/미체결(t0425) =========")
+    # def test_order_check(self):
+    #     print("========= 주식 체결/미체결(t0425) =========")
+    #     print(inspect.stack()[0][3])
+    #     result = self.ebest.order_check("29515")
+    #     assert result
+    #     print(result)
+
+    # def test_get_current_call_price_by_code(self):
+    #     print("========= 주식 현재가 호가 조회(t1101) =========")
+    #     print(inspect.stack()[0][3])
+    #     result = self.ebest.get_current_call_price_by_code("005930")
+    #     assert result
+    #     print(result)
+
+    def test_get_price_n_min_by_code(self):
+        print("========= 주식차트(N분)(t8412) 조회 =========")
         print(inspect.stack()[0][3])
-        result = self.ebest.order_check("29515")
+        result = self.ebest.get_price_n_min_by_code("20190412", "180640")
         assert result
         print(result)
 
-    def test_get_current_call_price_by_code(self):
-        print("========= 주식 현재가 호가 조회(t1101) =========")
+    def test_get_price_n_min_by_code_tick(self):
+        print("========= 주식차트(N분)(t8412) 조회 =========")
         print(inspect.stack()[0][3])
-        result = self.ebest.get_current_call_price_by_code("005930")
+        result = self.ebest.get_price_n_min_by_code("20190412", "005930", 0)
         assert result
         print(result)

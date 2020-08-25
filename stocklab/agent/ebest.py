@@ -397,6 +397,30 @@ class EBest:
         elif price >= 100000 and price < 500000: return 500
         elif price >= 500000: return 1000
 
+    def get_price_n_min_by_code(self, date, code, tick=None):
+        """TR: t8412 주식차트(N분) 
+        :param code:str 종목코드
+        :param date:str 시작시간
+        :return result:dict 하루치 분당 가격 정보
+        """
+        in_params = {"shcode":code,"ncnt":"1", "qrycnt":"500", "nday":"1", "sdate":date, 
+                "stime":"090000", "edate":date, "etime":"153000", "cts_date":"00000000", 
+                "cts_time":"0000000000", "comp_yn":"N"}
+        out_params = ["date", "time", "open", "high", "low", "close", "jdiff_vol", "value"]
+
+        result_list = self._execute_query("t8412",
+                                    "t8412InBlock",
+                                    "t8412OutBlock1",
+                                    *out_params,
+                                    **in_params)
+        result = {}
+        for idx, item in enumerate(result_list):
+            result[idx] = item
+        if tick is not None:
+            return result[tick]
+        return result
+
+
 class XAQuery:
     RES_PATH = "C:\\eBEST\\xingAPI\\Res"
     tr_run_state = 0
