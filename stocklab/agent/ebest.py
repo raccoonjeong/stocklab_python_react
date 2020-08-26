@@ -39,7 +39,7 @@ class EBest:
         xa_session_client는 XASession 객체
         :param mode:str - 모의서버는 DEMO 실서버는 PROD로 구분
         """
-        if mode not in ["PROD", "DEMO"]:
+        if mode not in ["PROD", "DEMO", "ACE"]:
             raise Exception("Need to run_mode(PROD or DEMO)")
 
         run_mode = "EBEST_" + mode
